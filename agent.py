@@ -13,19 +13,20 @@ class Agent:
         self.memory = deque(maxlen=2000)
         self.gamma = 0.95   # discount rate
         self.epsilon = 1.0  # exploration rate
-        self.epsilon_min = 0.01  # exploration will not decay futher
-        self.epsilon_decay = 0.00045
+        self.epsilon_min = 0.00  # exploration will not decay futher
+        self.epsilon_decay = 0.000995
         self.learning_rate = 0.001
         self.model = self._build_model()
         self.target_model = self._build_model()
         self.weight_backup = 'model_weights.h5'
+        self.f = open('csvfile.csv', 'w')
 
     def _build_model(self):
         model = Sequential()
-        model.add(Dense(20, input_dim=self.state_size, activation='elu'))
-        model.add(Dense(20, activation='elu'))
+        model.add(Dense(20, input_dim=self.state_size, activation='relu'))
+        model.add(Dense(20, activation='relu'))
         model.add(Dense(self.action_size, activation='linear'))
-        model.compile(loss='mse', optimizer=Nadam(lr=self.learning_rate))
+        model.compile(loss='mse', optimizer=Adam(lr=self.learning_rate))
         return model
 
     def save_model(self):
@@ -55,6 +56,7 @@ class Agent:
                 target = reward + self.gamma * future_q[np.argmax(future_action)]
             target_f = self.model.predict(state)
             target_f[0][action] = target
-            self.model.fit(state, target_f, epochs=1, verbose=0)
+            history = self.model.fit(state, target_f, epochs=1, verbose=0)
+        self.f.write('{}, {}\n'.format(history.history['loss'][0], target_f[0][action])) #Give your csv text here.
         if self.epsilon > self.epsilon_min:
             self.epsilon -= self.epsilon_decay

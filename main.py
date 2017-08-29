@@ -36,5 +36,6 @@ for i_episodes in range(episodes):
         agent.save_model()
         if i_episodes % 1 == 0:
             agent.update_target_model()
+agent.f.close()
 env.close()
 gym.upload(env_name, api_key='sk_WRCITkqmTJKYB9hvBk5tPA')
