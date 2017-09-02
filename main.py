@@ -34,7 +34,7 @@ for i_episodes in range(episodes):
     if done:
         print("{} episode, score = {} ".format(i_episodes + 1, index + 1))
         agent.save_model()
-        if i_episodes % 1 == 0:
+        if i_episodes % 5 == 0:
             agent.update_target_model()
 agent.f.close()
 env.close()
